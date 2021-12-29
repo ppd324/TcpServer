@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.16)
+project(TcpServer)
+set(CMAKE_CXX_STANDARD 14)
+add_library(network util.cpp util.h Socket.cpp Socket.h InetAddress.cpp InetAddress.h Epoll.cpp Epoll.h Channel.cpp Channel.h EventLoop.cpp EventLoop.h Server.cpp Server.h Acceptor.cpp Acceptor.h Buffer.cpp Buffer.h Connection.cpp Connection.h )
+add_executable(TcpServer main.cpp)
+target_link_libraries(TcpServer network)

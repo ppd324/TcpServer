@@ -1,0 +1,56 @@
+//
+// Created by 裴沛东 on 2021/12/28.
+//
+
+#include "Channel.h"
+
+#include <utility>
+class EventLoop;
+Channel::Channel(std::shared_ptr<EventLoop> loop, std::shared_ptr<Socket> sock): _loop(std::move(loop)),sock(std::move(sock)),events(0),revents(0),inpoll(false) {
+}
+
+Channel::~Channel() {
+
+}
+
+void Channel::enableReading() {
+    events = EPOLLIN | EPOLLET;
+    _loop->updateChannel(this);
+
+}
+
+int Channel::getFd() const {
+    return sock->get_fd();
+}
+
+uint32_t Channel::getEvents() const {
+    return events;
+}
+
+uint32_t Channel::getRevents() const {
+    return revents;
+}
+
+bool Channel::getInpoll() const {
+    return inpoll;
+}
+
+void Channel::setInpoll() {
+    inpoll = true;
+
+}
+
+void Channel::setEvents(uint32_t events) {
+    revents = events;
+
+}
+
+void Channel::setCallback(std::function<void()> &_cb) {
+    callback = _cb;
+
+}
+
+void Channel::handleEvent() {
+    callback();
+
+}
