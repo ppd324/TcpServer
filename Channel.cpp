@@ -4,7 +4,6 @@
 
 #include "Channel.h"
 
-#include <utility>
 class EventLoop;
 Channel::Channel(std::shared_ptr<EventLoop> loop, std::shared_ptr<Socket> sock): _loop(std::move(loop)),sock(std::move(sock)),events(0),revents(0),inpoll(false) {
 }
@@ -51,6 +50,7 @@ void Channel::setCallback(std::function<void()> &_cb) {
 }
 
 void Channel::handleEvent() {
-    callback();
+    _loop->addTaskToQueue(callback); //加入线程队列
+    //callback(); 直接执行
 
 }

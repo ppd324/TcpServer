@@ -6,10 +6,13 @@
 #define TCPSERVER_EVENTLOOP_H
 #include "Epoll.h"
 #include "Channel.h"
+#include "ThreadPool.h"
 class Channel;
 class Epoll;
+class ThreadPool;
 class EventLoop{
 private:
+    std::shared_ptr<ThreadPool> threadPool;
     Epoll *ep;
     bool quit;
 
@@ -19,6 +22,7 @@ public:
 
     void loop();
     void updateChannel(Channel *channel);
+    void addTaskToQueue(std::function<void()> &task);
 
 };
 
