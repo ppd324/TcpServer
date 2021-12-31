@@ -23,16 +23,16 @@ void Server::handleReadEvents(std::shared_ptr<Socket> socket) {
         bzero(&buf, sizeof(buf));
         ssize_t bytes_read = read(socket->get_fd(), buf, sizeof(buf));
         if(bytes_read > 0){
-            printf("message from client fd %d: %s\n", socket->get_fd(), buf);
+            LOG_INFO<<"message from client fd is "<<socket->get_fd()<<" content is "<<buf;
             write(socket->get_fd(), buf, sizeof(buf));
         } else if(bytes_read == -1 && errno == EINTR){  //客户端正常中断、继续读取
-            printf("continue reading");
+            LOG_INFO<<"continue reading";
             continue;
         } else if(bytes_read == -1 && ((errno == EAGAIN) || (errno == EWOULDBLOCK))){//非阻塞IO，这个条件表示数据全部读取完毕
-            printf("finish reading once, errno: %d\n", errno);
+            LOG_INFO<<"finish reading once";
             break;
         } else if(bytes_read == 0){  //EOF，客户端断开连接
-            printf("EOF, client fd %d disconnected\n", socket->get_fd());
+            LOG_INFO<<"EOF, client fd "<< socket->get_fd() <<" disconnected";
             close(socket->get_fd());   //关闭socket会自动将文件描述符从epoll树上移除
             break;
         }
@@ -43,7 +43,7 @@ Server::~Server() {
 
 }
 void Server::deleteConnection(const std::shared_ptr<Socket>& deletesocket) {
-    printf("delete client connection fd is %d\n",deletesocket->get_fd());
+    LOG_INFO<<"delete client connection fd is "<<deletesocket->get_fd();
     ConnList.erase(deletesocket);
 
 }

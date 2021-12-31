@@ -3,9 +3,10 @@
 //
 
 #include "ThreadPool.h"
+#include "util.h"
 
 ThreadPool::ThreadPool(int size):stop(false) {
-    printf("threadpool initialized,thread number is %d\n",size);
+    LOG_INFO<<"threadpool initialized,thread number is " << size;
     for(int i=0;i<size;++i) {
         threads.emplace_back([this]() {
             while(true) {
