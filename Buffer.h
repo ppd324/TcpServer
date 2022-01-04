@@ -7,6 +7,7 @@
 
 #include <string>
 #include <iostream>
+#include <algorithm>
 class Buffer {
 public:
     Buffer();
@@ -15,9 +16,17 @@ public:
     size_t size();
     const char* c_str();
     void clear();
-    void getline();
+    std::string::iterator peek();
+    std::string getline();
+    void Retrieve(size_t len);
+    void RetrieveUntil(std::string::iterator pos);
+    bool readable();
+    void print();
+    size_t readableBytes();
+
 private:
     std::string Buf;
+    std::string::iterator readPos_;
 
 
 

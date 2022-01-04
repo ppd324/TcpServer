@@ -26,7 +26,7 @@ private:
     std::function<void(std::shared_ptr<Socket>)> deleteConnetCallback;
 public:
     Connection(std::shared_ptr<EventLoop>  _loop,const std::shared_ptr<Socket>& _socket);
-    ~Connection();
+    virtual ~Connection();
 
     void echo(const std::shared_ptr<Socket>&);
     void setDeleteConnetCallback(std::function<void(std::shared_ptr<Socket>)> func);

@@ -5,16 +5,12 @@
 #include "Acceptor.h"
 
 Acceptor::Acceptor( std::shared_ptr<EventLoop>& loop,int port):_loop(loop),_sock(nullptr),_channel(nullptr) {
-    _sock = std::make_shared<Socket>();
-    InetAddress* addr = new InetAddress("",port);
-    _sock->bind(addr);
-    _sock->listen();
+    _sock = std::make_shared<Socket>("",port);
     _sock->setnonblocking();
     _channel = std::make_shared<Channel>(loop,_sock);
     std::function<void()> cb = std::bind(&Acceptor::acceptConnection,this);
     _channel->setCallback(cb);
     _channel->enableReading();
-    delete addr;
 }
 Acceptor::~Acceptor() {
 
@@ -25,7 +21,6 @@ void Acceptor::acceptConnection() {
     LOG_INFO<<"new client fd is "<< clnt_sock->get_fd()<<" ip is "<<inet_ntoa(clnt_addr->addr.sin_addr)<<" port is "<<ntohs(clnt_addr->addr.sin_port);
     clnt_sock->setnonblocking();
     newConnectionCallback(clnt_sock);
-    delete clnt_addr;
 
 }
 void Acceptor::setNewConnectionCallback(std::function<void(std::shared_ptr<Socket>)> callback) {

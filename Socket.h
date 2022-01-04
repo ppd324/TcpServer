@@ -18,15 +18,17 @@ class InetAddress;
 class Socket {
 public:
     Socket();
-    Socket(int fd);
+    explicit Socket(int fd);
+    Socket(int fd,InetAddress *addr);
+    Socket(const std::string& ip,int port);
     Socket(protocol);
     ~Socket();
     void bind(InetAddress*);
-    void listen();
-    void setnonblocking();
-    Socket accept(InetAddress* addr);
+    void listen() const;
+    void setnonblocking() const;
+    Socket accept(InetAddress* addr) const;
     void setsockopt();
-    int get_fd();
+    int get_fd() const;
     void set_fd(int fd);
 private:
     InetAddress *addr;
