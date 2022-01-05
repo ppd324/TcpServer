@@ -7,6 +7,7 @@
 Acceptor::Acceptor( std::shared_ptr<EventLoop>& loop,int port):_loop(loop),_sock(nullptr),_channel(nullptr) {
     _sock = std::make_shared<Socket>("",port);
     _sock->setnonblocking();
+    _sock->setsockopt();
     _channel = std::make_shared<Channel>(loop,_sock);
     std::function<void()> cb = std::bind(&Acceptor::acceptConnection,this);
     _channel->setCallback(cb);

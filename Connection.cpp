@@ -8,14 +8,11 @@
 #define READ_BUFFER 1024
 Connection::Connection(std::shared_ptr<EventLoop>  _loop, const std::shared_ptr<Socket>& _socket):loop(std::move(_loop)),socket(_socket),channel(nullptr),readBuffer(new Buffer),writeBuffer(new Buffer){
     channel = std::make_shared<Channel>(loop,socket);
-    std::function<void()> cb = std::bind(&Connection::echo,this,_socket);
+    /*std::function<void()> cb = std::bind(&Connection::echo,this,_socket);
     channel->setCallback(cb);
-    channel->enableReading();
+    channel->enableReading();*/
 }
 
-Connection::~Connection() {
-
-}
 
 void Connection::echo(const std::shared_ptr<Socket>& client_socket) {
     char buf[READ_BUFFER];
@@ -45,5 +42,9 @@ void Connection::echo(const std::shared_ptr<Socket>& client_socket) {
 
 void Connection::setDeleteConnetCallback(std::function<void(std::shared_ptr<Socket>)> func) {
     deleteConnetCallback = std::move(func);
+
+}
+
+Connection::~Connection() {
 
 }

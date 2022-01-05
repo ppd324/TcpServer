@@ -58,12 +58,15 @@ void Socket::setnonblocking() const {
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
 }
 void Socket::setsockopt() {
-
+    int opt = 1;
+    errif(::setsockopt(fd,SOL_SOCKET, SO_REUSEADDR,(void*)&opt,sizeof(opt)) < 0,"reuse socket error");
 }
 
 Socket::Socket(const std::string& ip, int port):addr(new InetAddress(ip.c_str(),port)) {
     fd = socket(AF_INET,SOCK_STREAM,0);
     errif(fd == -1,"create socket failed");
+    int opt = 1;
+    errif(::setsockopt(fd,SOL_SOCKET, SO_REUSEADDR,(void*)&opt,sizeof(opt)) < 0,"reuse socket error");
     errif(::bind(fd,reinterpret_cast<struct sockaddr*>(&addr->addr),addr->addr_len) == -1,"socket bind failed");
     errif(::listen(fd,SOMAXCONN) == -1,"socket listen failed");
 

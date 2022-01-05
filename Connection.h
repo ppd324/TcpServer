@@ -17,9 +17,8 @@ class Buffer;
  */
 
 class Connection {
-private:
+protected:
     std::shared_ptr<EventLoop> loop;
-    std::shared_ptr<Channel> channel;
     std::shared_ptr<Socket> socket;
     std::shared_ptr<Buffer> readBuffer;
     std::shared_ptr<Buffer> writeBuffer;
@@ -31,6 +30,8 @@ public:
     void echo(const std::shared_ptr<Socket>&);
     void setDeleteConnetCallback(std::function<void(std::shared_ptr<Socket>)> func);
 
+
+    std::shared_ptr<Channel> channel;
 };
 
 

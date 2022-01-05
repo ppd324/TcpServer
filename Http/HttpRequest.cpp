@@ -28,12 +28,12 @@ std::string& HttpRequest::path(){
     return path_;
 }
 
-bool HttpRequest::parse(Buffer &buffer) {
-    if(!buffer.readable()) {
+bool HttpRequest::parse(std::shared_ptr<Buffer> &buffer) {
+    if(!buffer->readable()) {
         return false;
     }
-    while(buffer.readable() && parse_state_ != FINISH_) {
-        std::string line = std::move(buffer.getline());
+    while(buffer->readable() && parse_state_ != FINISH_) {
+        std::string line = std::move(buffer->getline());
         switch(parse_state_) {
             case REQUEST_LINE_:
                 if(!ParseRequestLine_(line)) {
@@ -43,7 +43,7 @@ bool HttpRequest::parse(Buffer &buffer) {
                 break;
             case HEADERS_:
                 ParseHeader_(line);
-                if(buffer.readableBytes() <= 2) {
+                if(buffer->readableBytes() <= 2) {
                     parse_state_ = FINISH_;
                 }
                 break;
@@ -55,7 +55,7 @@ bool HttpRequest::parse(Buffer &buffer) {
         }
     }
 
-    return false;
+    return true;
 }
 
 std::string& HttpRequest::method() {
@@ -67,11 +67,20 @@ std::string& HttpRequest::version() {
 }
 
 std::string HttpRequest::GetPost(const std::string &key) const {
-    return std::string();
+    assert(!key.empty());
+    if(post_.count(key)) {
+        return post_.find(key)->second;
+    }
+    return "";
+
 }
 
 std::string HttpRequest::GetPost(const char *key) const {
-    return std::string();
+    assert(key != nullptr);
+    if(post_.count(key)) {
+        return post_.find(key)->second;
+    }
+    return "";
 }
 
 bool HttpRequest::IsKeepAlive() const {
@@ -90,6 +99,7 @@ bool HttpRequest::ParseRequestLine_(const std::string &line) {
         version_ = subMatch[3];
         parse_state_ = HEADERS_;
         return true;
+        LOG_DEBUG<<"parse requestLine successfully";
     }
     LOG_ERROR<<"parse requestLine error";
     return false;
@@ -141,10 +151,67 @@ void HttpRequest::ParsePost_() {
 
 }
 bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin) {
+    if(name.empty() || pwd.empty()) return false;
+    LOG_INFO<<"username: "<<name<<" pwd: "<<pwd;
+    MYSQL* sql;
+    SqlConnRAII(&sql,SqlConnPool::Instance());
+    assert(sql);
+
+    bool flag = false;
+    unsigned int j = 0;
+    char order[256] = { 0 };
+    MYSQL_FIELD *fields = nullptr;
+    MYSQL_RES *res = nullptr;
+    if(!isLogin) { flag = true; }
+    /* 查询用户及密码 */
+    snprintf(order, 256, "SELECT username, password FROM user WHERE username='%s' LIMIT 1", name.c_str());
+    LOG_DEBUG<<order;
+
+    if(mysql_query(sql,order)) { //返回值为0执行成功、非0失败
+        mysql_free_result(res);
+        return false;
+    }
+    res = mysql_store_result(sql);
+    j = mysql_num_fields(res);
+    fields = mysql_fetch_fields(res);
+    while(MYSQL_ROW row = mysql_fetch_row(res)) {
+        LOG_DEBUG<<"mysql row is "<<row[0] << " "<<row[1];
+        std::string password(row[1]);
+        if(isLogin) {
+            if(pwd == password) { flag = true; }
+            else {
+                flag = false;
+                LOG_DEBUG<<"pwd error!";
+            }
+        }
+        else {
+            flag = false;
+            LOG_DEBUG<<"user used!";
+        }
+
+    }
+    mysql_free_result(res);
+    /*注册行为*/
+    if(!isLogin && flag) {
+        LOG_DEBUG<<"register user";
+        bzero(order,256);
+        snprintf(order, 256,"INSERT INTO user(username, password) VALUES('%s','%s')", name.c_str(), pwd.c_str());
+        LOG_DEBUG<<"sql query:"<<order;
+        if(mysql_query(sql,order)) {
+            LOG_ERROR<<"sql insert error";
+            flag = false;
+        }
+        flag = true;
+
+    }
+    LOG_DEBUG<<"UserVerify Successful";
+    return flag;
+
+
 
 }
 void HttpRequest::ParseFromUrlencoded_() {
-    if(body_.size() == 0) { return; }
+    if(body_.empty()) { return; }
     string key, value;
     int num = 0;
     int n = body_.size();

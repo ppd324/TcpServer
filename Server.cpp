@@ -6,9 +6,10 @@
 class Socket;
 class InetAddress;
 class Channel;
+class Httpconn;
 Server::Server(std::shared_ptr<EventLoop> loop, uint32_t port):loop(loop),acceptor(nullptr){
     this->acceptor = std::make_shared<Acceptor>(loop,port);
-    std::function<void(std::shared_ptr<Socket>)> cb = std::bind(&Server::newConnection, this, std::placeholders::_1);
+    std::function<void(std::shared_ptr<Socket>)> cb = std::bind(&Server::onHttpConnect, this, std::placeholders::_1);
     acceptor->setNewConnectionCallback(cb);
 }
 void Server::newConnection(std::shared_ptr<Socket> socket) {
@@ -17,6 +18,7 @@ void Server::newConnection(std::shared_ptr<Socket> socket) {
     conn->setDeleteConnetCallback(cb);
     ConnList[socket] = conn;
 }
+
 void Server::handleReadEvents(std::shared_ptr<Socket> socket) {
     char buf[READ_BUFFER];
     while(true){    //由于使用非阻塞IO，读取客户端buffer，一次读取buf大小数据，直到全部读取完毕
@@ -44,6 +46,28 @@ Server::~Server() {
 }
 void Server::deleteConnection(const std::shared_ptr<Socket>& deletesocket) {
     LOG_INFO<<"delete client connection fd is "<<deletesocket->get_fd();
-    ConnList.erase(deletesocket);
+    if(httpConnList.count(deletesocket)) {
+        httpConnList.find(deletesocket)->second->channel->enableDeleting(); //从树上取下
+    }
+    httpConnList.erase(deletesocket);
+
+}
+
+void Server::onHttpConnect(shared_ptr<Socket> socket) {
+    std::shared_ptr<Httpconn> conn = std::make_shared<Httpconn>(loop,socket);
+    onReadEvent(conn,socket);
+    std::function<void(std::shared_ptr<Socket>)> cb = std::bind(&Server::deleteConnection,this,socket);
+    conn->setDeleteConnetCallback(cb);
+    httpConnList[socket] = conn;
+}
+
+void Server::onReadEvent(shared_ptr<Httpconn> &httpconn,shared_ptr<Socket> &_socket) {
+    std::function<void()> cb = std::bind(&Httpconn::handleEvent,httpconn,_socket);
+    httpconn->channel->setCallback(cb);
+    httpconn->channel->enableReading();
+}
+
+void Server::onWriteEvent(shared_ptr<Httpconn> &httpconn) {
+
 
 }

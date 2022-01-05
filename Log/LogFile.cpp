@@ -172,6 +172,7 @@ void LogFile::setLogFileOption(const std::string &filepath, const std::string &f
         out.close();
     out = std::ofstream(fileName,std::ios_base::in|std::ios_base::trunc);
     fileStoreDays[time(0)] = fileName;
+
 }
 
 void LogFile::monitorFileTime() {

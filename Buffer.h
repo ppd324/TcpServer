@@ -13,6 +13,7 @@ public:
     Buffer();
     ~Buffer();
     void append(const char* data,size_t len);
+    void append(const std::string& data);
     size_t size();
     const char* c_str();
     void clear();

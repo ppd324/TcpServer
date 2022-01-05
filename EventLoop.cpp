@@ -33,3 +33,8 @@ void EventLoop::addTaskToQueue(std::function<void()> &task) {
     threadPool->addTask(task);
 
 }
+
+void EventLoop::deleteChannel(Channel *channel) {
+    ep->deleteChannel(channel);
+
+}

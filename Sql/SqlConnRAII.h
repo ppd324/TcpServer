@@ -5,6 +5,7 @@
 #ifndef TCPSERVER_SQLCONNRAII_H
 #define TCPSERVER_SQLCONNRAII_H
 #include <mysql/mysql.h>
+#include <cassert>
 #include "SqlConnPool.h"
 
 class SqlConnRAII {

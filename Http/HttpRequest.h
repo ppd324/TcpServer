@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <string>
 #include <regex>
+#include <memory>
 #include "../Sql/SqlConnRAII.h"
 #include "../Buffer.h"
 #include "../util.h"
@@ -34,7 +35,7 @@ public:
     HttpRequest();
     void init();
     ~HttpRequest() = default;
-    bool parse(Buffer &buffer);
+    bool parse(std::shared_ptr<Buffer> &buffer);
 
     std::string& path();
     std::string& method();

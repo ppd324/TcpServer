@@ -26,6 +26,8 @@ public:
     bool poll(int timeout = -1);
     std::vector<Channel*>& getActiveEvents();
     void updateChannel(Channel *channel);
+    void deleteChannel(Channel *channel);
+    void modifyChannel(Channel *channel);
 };
 
 #endif //TCPSERVER_EPOLL_H

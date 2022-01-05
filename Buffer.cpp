@@ -4,7 +4,7 @@
 
 #include <cassert>
 #include "Buffer.h"
-Buffer::Buffer():readPos_(Buf.begin()) {
+Buffer::Buffer():Buf(""){
 
 }
 Buffer::~Buffer() {
@@ -64,4 +64,9 @@ void Buffer::print() {
 }
 size_t Buffer::readableBytes() {
     return Buf.end() - readPos_;
+}
+
+void Buffer::append(const std::string &data) {
+    Buf += data;
+    readPos_ = Buf.begin();
 }

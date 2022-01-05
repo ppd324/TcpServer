@@ -24,6 +24,8 @@ public:
     void setInpoll();
     void setEvents(uint32_t events);
     void setCallback(std::function<void()> &_cb);
+    void enableWriting();
+    void enableDeleting();
     void handleEvent();
 
 private:

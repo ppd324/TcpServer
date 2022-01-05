@@ -22,6 +22,7 @@ public:
 
     void loop();
     void updateChannel(Channel *channel);
+    void deleteChannel(Channel *channel);
     void addTaskToQueue(std::function<void()> &task);
 
 };

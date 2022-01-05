@@ -15,8 +15,9 @@ Channel::~Channel() {
 void Channel::enableReading() {
     events = EPOLLIN | EPOLLET;
     _loop->updateChannel(this);
-
 }
+
+
 
 int Channel::getFd() const {
     return sock->get_fd();
@@ -52,5 +53,16 @@ void Channel::setCallback(std::function<void()> &_cb) {
 void Channel::handleEvent() {
     _loop->addTaskToQueue(callback); //加入线程队列
     //callback(); 直接执行
+
+}
+
+void Channel::enableWriting() {
+    events = EPOLLOUT | EPOLLET;
+    _loop->updateChannel(this);
+
+}
+
+void Channel::enableDeleting() {
+    _loop->deleteChannel(this);
 
 }

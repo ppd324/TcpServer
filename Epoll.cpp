@@ -52,7 +52,23 @@ void Epoll::updateChannel(Channel *channel) {
         errif(epoll_ctl(epollfd,EPOLL_CTL_ADD,fd,&event) == -1,"epoll add event failed");
         channel->setInpoll();
     } else {
-        errif(epoll_ctl(epollfd,EPOLL_CTL_ADD,fd,&event) == -1,"epoll modify event failed");
+        errif(epoll_ctl(epollfd,EPOLL_CTL_MOD,fd,&event) == -1,"epoll modify event failed");
     }
+
+}
+
+void Epoll::deleteChannel(Channel *channel) {
+    struct epoll_event event;
+    bzero(&event,sizeof(event));
+    event.data.ptr = channel;
+    event.events = channel->getEvents();
+    if(channel->getInpoll()) {
+        errif(epoll_ctl(epollfd,EPOLL_CTL_DEL,channel->getFd(),&event) == -1,"epoll delete event failed");
+    }
+
+}
+
+void Epoll::modifyChannel(Channel *channel) {
+
 
 }

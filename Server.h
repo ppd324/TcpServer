@@ -11,6 +11,7 @@
 #include "Socket.h"
 #include "Acceptor.h"
 #include "Connection.h"
+#include "./Http/Httpconn.h"
 
 #define READ_BUFFER 1024
 class Connection;
@@ -21,11 +22,15 @@ public:
     ~Server();
     void handleReadEvents(std::shared_ptr<Socket> socket);
     void newConnection(std::shared_ptr<Socket> socket);
+    void onHttpConnect(std::shared_ptr<Socket> socket);
+    static void onReadEvent(std::shared_ptr<Httpconn> &httpconn,std::shared_ptr<Socket> &socket);
+    void onWriteEvent(std::shared_ptr<Httpconn> &httpconn);
     void deleteConnection(const std::shared_ptr<Socket>& socket);
 private:
     std::shared_ptr<Acceptor> acceptor;
     //Acceptor* acceptor;
     std::unordered_map<std::shared_ptr<Socket>,std::shared_ptr<Connection>> ConnList;
+    std::unordered_map<std::shared_ptr<Socket>,std::shared_ptr<Httpconn>> httpConnList;
     std::shared_ptr<EventLoop> loop;
 };
 #endif //TCPSERVER_SERVER_H
