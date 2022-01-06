@@ -55,6 +55,7 @@ void Buffer::RetrieveUntil(std::string::iterator pos) {
 }
 
 bool Buffer::readable() {
+    if(Buf == "") return false;
     return readPos_ != Buf.end();
 }
 void Buffer::print() {
@@ -69,4 +70,10 @@ size_t Buffer::readableBytes() {
 void Buffer::append(const std::string &data) {
     Buf += data;
     readPos_ = Buf.begin();
+}
+
+void Buffer::init() {
+    Buf.clear();
+    readPos_ = Buf.begin();
+
 }

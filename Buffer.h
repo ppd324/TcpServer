@@ -15,6 +15,7 @@ public:
     void append(const char* data,size_t len);
     void append(const std::string& data);
     size_t size();
+    void init();
     const char* c_str();
     void clear();
     std::string::iterator peek();

@@ -26,7 +26,9 @@ public:
     void setCallback(std::function<void()> &_cb);
     void enableWriting();
     void enableDeleting();
+    void enableListening();
     void handleEvent();
+    void setNotUseThreadPool(bool flag);
 
 private:
     std::shared_ptr<EventLoop> _loop;
@@ -35,6 +37,7 @@ private:
     uint32_t revents;
     bool inpoll;
     std::function<void()> callback;
+    bool flag = false;
 
 };
 #endif //TCPSERVER_CHANNEL_H

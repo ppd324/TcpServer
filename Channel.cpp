@@ -17,6 +17,11 @@ void Channel::enableReading() {
     _loop->updateChannel(this);
 }
 
+void Channel::enableListening() {
+    events = EPOLLRDHUP |EPOLLET | EPOLLIN;
+    _loop->updateChannel(this);
+}
+
 
 
 int Channel::getFd() const {
@@ -51,8 +56,11 @@ void Channel::setCallback(std::function<void()> &_cb) {
 }
 
 void Channel::handleEvent() {
-    _loop->addTaskToQueue(callback); //加入线程队列
-    //callback(); 直接执行
+    if(flag) {
+        callback(); //直接执行
+    }else {
+        _loop->addTaskToQueue(callback); //加入线程队列
+    }
 
 }
 
@@ -64,5 +72,10 @@ void Channel::enableWriting() {
 
 void Channel::enableDeleting() {
     _loop->deleteChannel(this);
+
+}
+
+void Channel::setNotUseThreadPool(bool flag) {
+    this->flag  = flag;
 
 }
