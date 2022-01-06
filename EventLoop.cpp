@@ -3,7 +3,7 @@
 //
 
 #include "EventLoop.h"
-EventLoop::EventLoop():ep(nullptr),quit(false),threadPool(new ThreadPool()){
+EventLoop::EventLoop():ep(nullptr),quit(false),threadPool(new ThreadPool(5)){
     ep = new Epoll();
 
 }

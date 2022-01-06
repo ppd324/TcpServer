@@ -18,6 +18,7 @@ size_t Httpconn::write(std::shared_ptr<Socket>& _socket) {
     do {
         len = writev(_socket->get_fd(),iov_,iovCnt_);
         if(len < 0) {
+            LOG_DEBUG<<"write to client error";
             deleteConnetCallback(_socket);
             break;
         }
@@ -36,6 +37,7 @@ size_t Httpconn::write(std::shared_ptr<Socket>& _socket) {
         }
 
     } while (isET || ToWriteBytes() > 10240);
+    writeBuffer->clear();
     return len;
 
 }
@@ -52,6 +54,7 @@ size_t Httpconn::read(std::shared_ptr<Socket>& _socket) {
         } else if(bytes_read == -1 && ((errno == EAGAIN) || (errno == EWOULDBLOCK))){//非阻塞IO，这个条件表示数据全部读取完毕
             break;
         } else if(bytes_read == 0){  //EOF，客户端断开连接
+            LOG_DEBUG<<"read message error fd is "<<_socket->get_fd();
             deleteConnetCallback(_socket);
             break;
         }
@@ -62,6 +65,7 @@ size_t Httpconn::read(std::shared_ptr<Socket>& _socket) {
 }
 bool Httpconn::process() {
     if(!readBuffer->readable()) return false;
+    std::cout<<readBuffer->c_str()<<std::endl;
     if(httpRequest_.parse(readBuffer)) {
         LOG_DEBUG<<httpRequest_.path();
         LOG_DEBUG<<"http connectstatus is"<<httpRequest_.IsKeepAlive();
@@ -81,6 +85,8 @@ bool Httpconn::process() {
         iovCnt_ = 2;
     }
     LOG_DEBUG<<"filesize:"<< httpResponse_.FileLen() <<" iovCnt_: " <<iovCnt_<<" writeBufSize:"<<writeBuffer->readableBytes();
+    readBuffer->init();
+    httpRequest_.init();
     return true;
 
 }
@@ -89,10 +95,10 @@ bool Httpconn::process() {
 bool Httpconn::handleEvent(std::shared_ptr<Socket> &_socket) {
     read(_socket);
     if(process()) {
-        std::function<void()> cb = std::bind(&Httpconn::write,this,_socket);
+        /*std::function<void()> cb = std::bind(&Httpconn::write,this,_socket);
         channel->setCallback(cb);
-        channel->enableWriting();
-        //write(_socket);
+        channel->enableWriting();*/
+        write(_socket);
     }
 
 

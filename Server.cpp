@@ -7,13 +7,25 @@ class Socket;
 class InetAddress;
 class Channel;
 class Httpconn;
-Server::Server(std::shared_ptr<EventLoop> loop, uint32_t port):loop(loop),acceptor(nullptr){
+Server::Server(std::shared_ptr<EventLoop> loop, uint32_t port):mainReactor(loop),acceptor(nullptr){
     this->acceptor = std::make_shared<Acceptor>(loop,port);
     std::function<void(std::shared_ptr<Socket>)> cb = std::bind(&Server::onHttpConnect, this, std::placeholders::_1);
     acceptor->setNewConnectionCallback(cb);
+
+    //int threadSize = std::thread::hardware_concurrency();
+    int threadSize = 5;
+    //this->threadPool = std::make_shared<ThreadPool>(threadSize);
+    /*for(int i=0;i<threadSize;++i) {
+        subReactor.emplace_back(std::make_shared<EventLoop>());
+    }*/
+
+    /*for(int i=0;i<threadSize;++i) {
+        std::function<void()> sub_loop = std::bind(&EventLoop::loop,subReactor[i]);
+        threadPool->addTask(sub_loop);
+    }*/
 }
-void Server::newConnection(std::shared_ptr<Socket> socket) {
-    std::shared_ptr<Connection> conn = std::make_shared<Connection>(loop,socket);
+void Server::newConnection(const std::shared_ptr<Socket>& socket) {
+    std::shared_ptr<Connection> conn = std::make_shared<Connection>(mainReactor,socket);
     std::function<void(std::shared_ptr<Socket>)> cb = std::bind(&Server::deleteConnection,this,socket);
     conn->setDeleteConnetCallback(cb);
     ConnList[socket] = conn;
@@ -50,15 +62,20 @@ void Server::deleteConnection(const std::shared_ptr<Socket>& deletesocket) {
         httpConnList.find(deletesocket)->second->channel->enableDeleting(); //从树上取下
     }
     httpConnList.erase(deletesocket);
+    close(deletesocket->get_fd());
 
 }
 
 void Server::onHttpConnect(shared_ptr<Socket> socket) {
-    std::shared_ptr<Httpconn> conn = std::make_shared<Httpconn>(loop,socket);
-    onReadEvent(conn,socket);
-    std::function<void(std::shared_ptr<Socket>)> cb = std::bind(&Server::deleteConnection,this,socket);
-    conn->setDeleteConnetCallback(cb);
-    httpConnList[socket] = conn;
+    if(socket->get_fd() != -1) {
+        //int random = socket->get_fd()%subReactor.size();
+        std::shared_ptr<Httpconn> conn = std::make_shared<Httpconn>(mainReactor,socket);
+        onReadEvent(conn,socket);
+        std::function<void(std::shared_ptr<Socket>)> cb = std::bind(&Server::deleteConnection,this,socket);
+        conn->setDeleteConnetCallback(cb);
+        httpConnList[socket] = conn;
+    }
+
 }
 
 void Server::onReadEvent(shared_ptr<Httpconn> &httpconn,shared_ptr<Socket> &_socket) {

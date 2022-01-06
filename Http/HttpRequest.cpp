@@ -40,15 +40,18 @@ bool HttpRequest::parse(std::shared_ptr<Buffer> &buffer) {
                     return false;
                 }
                 ParsePath_();
+                LOG_DEBUG<<"parse line successfully";
                 break;
             case HEADERS_:
                 ParseHeader_(line);
                 if(buffer->readableBytes() <= 2) {
                     parse_state_ = FINISH_;
                 }
+                LOG_DEBUG<<"parse header successfully";
                 break;
             case BODY_:
                 ParseBody_(line);
+                LOG_DEBUG<<"parse body successfully";
                 break;
             default:
                 break;
