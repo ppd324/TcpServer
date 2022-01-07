@@ -15,7 +15,7 @@ EventLoop::~EventLoop() {
 void EventLoop::loop() {
     while(!quit) {
         if(ep->poll()) {
-            std::vector<Channel*> active = ep->getActiveEvents();
+            std::vector<Channel*> active = std::move(ep->getActiveEvents());
             for(auto & it : active) {
                 it->handleEvent();
 
