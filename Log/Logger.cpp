@@ -69,7 +69,7 @@ void Logger::setLogFmtType(Logger::LogFmtType type) {
     Logger::s_logFmtType = type;
 }
 void Log::initLogLevel() {
-    Logger::setLogLevel(Logger::TRACE);
+    Logger::setLogLevel(Logger::DEBUG);
     return;
 }
 

@@ -45,7 +45,8 @@ SqlConnPool::Init(const char *host, int port, const char *user, const char *pwd,
         conn = mysql_real_connect(conn,host,user,pwd,dbName,port,nullptr,0);
         if(!conn) {
             LOG_ERROR<<"mysql connect error";
-
+        }else {
+            LOG_DEBUG<<"mysql connect success";
         }
         _connQue.push(conn);
     }
@@ -72,7 +73,7 @@ void SqlConnPool::closePool() {
 }
 
 SqlConnPool::SqlConnPool():_USE_COUNT_(0),_FREE_COUNT_(0) {
-
+    Init("127.0.0.1",3306,"root","123456","serverUser",3);
 }
 
 SqlConnPool::~SqlConnPool() {

@@ -157,7 +157,7 @@ bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin
     if(name.empty() || pwd.empty()) return false;
     LOG_INFO<<"username: "<<name<<" pwd: "<<pwd;
     MYSQL* sql;
-    SqlConnRAII(&sql,SqlConnPool::Instance());
+    SqlConnRAII sqlConn(&sql,SqlConnPool::Instance());
     assert(sql);
 
     bool flag = false;

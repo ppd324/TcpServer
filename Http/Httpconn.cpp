@@ -6,7 +6,7 @@
 
 #include <utility>
 #include "../Server.h"
-const char* Httpconn::srcDir = "../resources";
+const char* Httpconn::srcDir = "/home/ppd/CLionProjects/TcpServer/resources";
 std::atomic<int> Httpconn::userCount;
 bool Httpconn::isET = true;
 Httpconn::Httpconn(std::shared_ptr<EventLoop> _loop, const std::shared_ptr<Socket> &_socket): Connection(std::move(_loop),_socket),httpRequest_() {
@@ -65,7 +65,7 @@ size_t Httpconn::read(std::shared_ptr<Socket>& _socket) {
 }
 bool Httpconn::process() {
     if(!readBuffer->readable()) return false;
-    std::cout<<readBuffer->c_str()<<std::endl;
+    //std::cout<<readBuffer->c_str()<<std::endl;
     if(httpRequest_.parse(readBuffer)) {
         LOG_DEBUG<<httpRequest_.path();
         LOG_DEBUG<<"http connectstatus is"<<httpRequest_.IsKeepAlive();
