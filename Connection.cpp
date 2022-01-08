@@ -8,6 +8,7 @@
 #define READ_BUFFER 1024
 Connection::Connection(std::shared_ptr<EventLoop>  _loop, const std::shared_ptr<Socket>& _socket):loop(std::move(_loop)),socket(_socket),channel(nullptr),readBuffer(new Buffer),writeBuffer(new Buffer){
     channel = std::make_shared<Channel>(loop,socket);
+    channel->setNotUseThreadPool(true);
     /*std::function<void()> cb = std::bind(&Connection::echo,this,_socket);
     channel->setCallback(cb);
     channel->enableReading();*/

@@ -12,7 +12,7 @@ class Epoll;
 class ThreadPool;
 class EventLoop{
 private:
-    std::shared_ptr<ThreadPool> threadPool;
+    //std::shared_ptr<ThreadPool> threadPool;
     Epoll *ep;
     bool quit;
 

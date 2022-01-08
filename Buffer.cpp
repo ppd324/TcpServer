@@ -55,7 +55,7 @@ void Buffer::RetrieveUntil(std::string::iterator pos) {
 }
 
 bool Buffer::readable() {
-    if(Buf == "") return false;
+    if(Buf.empty()) return false;
     return readPos_ != Buf.end();
 }
 void Buffer::print() {

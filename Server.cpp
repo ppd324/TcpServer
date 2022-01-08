@@ -14,15 +14,15 @@ Server::Server(std::shared_ptr<EventLoop> loop, uint32_t port):mainReactor(loop)
 
     //int threadSize = std::thread::hardware_concurrency();
     int threadSize = 5;
-    //this->threadPool = std::make_shared<ThreadPool>(threadSize);
-    /*for(int i=0;i<threadSize;++i) {
+    this->threadPool = std::make_shared<ThreadPool>(threadSize);
+    for(int i=0;i<threadSize;++i) {
         subReactor.emplace_back(std::make_shared<EventLoop>());
-    }*/
+    }
 
-    /*for(int i=0;i<threadSize;++i) {
+    for(int i=0;i<threadSize;++i) {
         std::function<void()> sub_loop = std::bind(&EventLoop::loop,subReactor[i]);
         threadPool->addTask(sub_loop);
-    }*/
+    }
 }
 void Server::newConnection(const std::shared_ptr<Socket>& socket) {
     std::shared_ptr<Connection> conn = std::make_shared<Connection>(mainReactor,socket);
@@ -68,8 +68,8 @@ void Server::deleteConnection(const std::shared_ptr<Socket>& deletesocket) {
 
 void Server::onHttpConnect(shared_ptr<Socket> socket) {
     if(socket->get_fd() != -1) {
-        //int random = socket->get_fd()%subReactor.size();
-        std::shared_ptr<Httpconn> conn = std::make_shared<Httpconn>(mainReactor,socket);
+        int random = socket->get_fd()%subReactor.size();
+        std::shared_ptr<Httpconn> conn = std::make_shared<Httpconn>(subReactor[random],socket);
         onReadEvent(conn,socket);
         std::function<void(std::shared_ptr<Socket>)> cb = std::bind(&Server::deleteConnection,this,socket);
         conn->setDeleteConnetCallback(cb);

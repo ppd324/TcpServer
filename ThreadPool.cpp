@@ -6,7 +6,9 @@
 #include "util.h"
 
 ThreadPool::ThreadPool(int size):stop(false) {
-    LOG_INFO<<"threadpool initialized,thread number is " << size;
+    {
+        LOG_INFO << "threadpool initialized,thread number is " << size;
+    }
     for(int i=0;i<size;++i) {
         threads.emplace_back([this]() {
             while(true) {
@@ -41,7 +43,7 @@ ThreadPool::~ThreadPool() {
     }
 
 }
-void ThreadPool::addTask(std::function<void()> task) {
+void ThreadPool::addTask(const std::function<void()>& task) {
     {
         std::unique_lock<std::mutex> lock(taskMutex);
         if(stop)

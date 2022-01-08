@@ -1,7 +1,7 @@
 //
 // Created by 裴沛东 on 2021/12/27.
 //
-#define MAX_EVENTS 1000
+#define MAX_EVENTS 20
 #include "Epoll.h"
 Epoll::Epoll():epollfd(-1),events(nullptr){
     epollfd = epoll_create(1);

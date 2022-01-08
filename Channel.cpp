@@ -5,7 +5,8 @@
 #include "Channel.h"
 
 class EventLoop;
-Channel::Channel(std::shared_ptr<EventLoop> loop, std::shared_ptr<Socket> sock): _loop(std::move(loop)),sock(std::move(sock)),events(0),revents(0),inpoll(false) {
+Channel::Channel(std::shared_ptr<EventLoop> loop, std::shared_ptr<Socket> sock): _loop(std::move(loop)),sock(std::move(sock)),events(0),revents(0),inpoll(false),flag(
+        false){
 }
 
 Channel::~Channel() {
@@ -18,7 +19,7 @@ void Channel::enableReading() {
 }
 
 void Channel::enableListening() {
-    events = EPOLLRDHUP |EPOLLET | EPOLLIN;
+    events = EPOLLRDHUP | EPOLLIN;
     _loop->updateChannel(this);
 }
 
@@ -59,6 +60,7 @@ void Channel::handleEvent() {
     if(flag) {
         callback(); //直接执行
     }else {
+        LOG_DEBUG<<"task joined threadQue";
         _loop->addTaskToQueue(callback); //加入线程队列
     }
 

@@ -20,7 +20,7 @@ private:
 public:
     explicit ThreadPool(int size = std::thread::hardware_concurrency()*5);
     ~ThreadPool();
-    void addTask(std::function<void()> task);
+    void addTask(const std::function<void()>& task);
 
 
 };

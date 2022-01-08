@@ -3,7 +3,7 @@
 //
 
 #include "EventLoop.h"
-EventLoop::EventLoop():ep(nullptr),quit(false),threadPool(new ThreadPool(5)){
+EventLoop::EventLoop():ep(nullptr),quit(false){
     ep = new Epoll();
 
 }
@@ -30,7 +30,7 @@ void EventLoop::updateChannel(Channel *channel) {
 
 }
 void EventLoop::addTaskToQueue(std::function<void()> &task) {
-    threadPool->addTask(task);
+    //threadPool->addTask(task);
 
 }
 
