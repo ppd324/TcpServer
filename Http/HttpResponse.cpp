@@ -50,7 +50,7 @@ HttpResponse::~HttpResponse() {
 
 }
 
-void HttpResponse::Init(const string &srcDir, string &path, bool isKeepAlive, int code) {
+void HttpResponse::Init(const std::string &srcDir, std::string &path, bool isKeepAlive, int code) {
     assert(!srcDir.empty());
     if(mmFile_) { unmapFile(); }
     code_ = code;
@@ -61,7 +61,7 @@ void HttpResponse::Init(const string &srcDir, string &path, bool isKeepAlive, in
     mmFileStat_ = { 0 };
 }
 
-void HttpResponse::makeResponse(shared_ptr<Buffer> &buffer) {
+void HttpResponse::makeResponse(std::shared_ptr<Buffer> &buffer) {
     /* 判断请求的资源文件 */
     if(stat((srcDir_ + path_).data(), &mmFileStat_) < 0 || S_ISDIR(mmFileStat_.st_mode)) {
         code_ = 404;
@@ -93,7 +93,7 @@ size_t HttpResponse::FileLen() const {
     return mmFileStat_.st_size;
 }
 
-void HttpResponse::errorContent(shared_ptr<Buffer> &buffer, std::string message) const {
+void HttpResponse::errorContent(std::shared_ptr<Buffer> &buffer, std::string message) const {
     std::string body;
     std::string status;
     body += "<html><title>Error</title>";
@@ -103,15 +103,15 @@ void HttpResponse::errorContent(shared_ptr<Buffer> &buffer, std::string message)
     } else {
         status = "Bad Request";
     }
-    body += to_string(code_) + " : " + status  + "\n";
+    body += std::to_string(code_) + " : " + status  + "\n";
     body += "<p>" + message + "</p>";
     body += "<hr><em>TinyWebServer</em></body></html>";
 
-    buffer->append("Content-length: " + to_string(body.size()) + "\r\n\r\n");
+    buffer->append("Content-length: " + std::to_string(body.size()) + "\r\n\r\n");
     buffer->append(body);
 }
 
-void HttpResponse::addStateLine_(shared_ptr<Buffer> &buffer) {
+void HttpResponse::addStateLine_(std::shared_ptr<Buffer> &buffer) {
     std::string status;
     if(CODE_STATUS.count(code_) == 1) {
         status = CODE_STATUS.find(code_)->second;
@@ -120,12 +120,12 @@ void HttpResponse::addStateLine_(shared_ptr<Buffer> &buffer) {
         code_ = 400;
         status = CODE_STATUS.find(400)->second;
     }
-    buffer->append("HTTP/1.1 " + to_string(code_) + " " + status + "\r\n");
+    buffer->append("HTTP/1.1 " + std::to_string(code_) + " " + status + "\r\n");
 
 
 }
 
-void HttpResponse::addHeader_(shared_ptr<Buffer> &buffer) {
+void HttpResponse::addHeader_(std::shared_ptr<Buffer> &buffer) {
     buffer->append("Connection: ");
     if(isKeepAlive_) {
         buffer->append("keep-alive\r\n");
@@ -137,7 +137,7 @@ void HttpResponse::addHeader_(shared_ptr<Buffer> &buffer) {
 
 }
 
-void HttpResponse::addContent_(shared_ptr<Buffer> &buffer) {
+void HttpResponse::addContent_(std::shared_ptr<Buffer> &buffer) {
     int srcFd = open((srcDir_ + path_).data(), O_RDONLY);
     if(srcFd < 0) {
         errorContent(buffer, "File NotFound!");
@@ -145,7 +145,7 @@ void HttpResponse::addContent_(shared_ptr<Buffer> &buffer) {
     }
     /* 将文件映射到内存提高文件的访问速度
         MAP_PRIVATE 建立一个写入时拷贝的私有映射*/
-    LOG_DEBUG<<"file path :"<<(srcDir_ + path_);
+    LOG_DEBUG("file path : %s",(srcDir_ + path_).c_str());
     int* mmRet = (int*)mmap(0, mmFileStat_.st_size, PROT_READ, MAP_PRIVATE, srcFd, 0);
     if(*mmRet == -1) {
         errorContent(buffer, "File NotFound!");
@@ -153,7 +153,7 @@ void HttpResponse::addContent_(shared_ptr<Buffer> &buffer) {
     }
     mmFile_ = (char*)mmRet;
     close(srcFd);
-    buffer->append("Content-length: " + to_string(mmFileStat_.st_size) + "\r\n\r\n");
+    buffer->append("Content-length: " + std::to_string(mmFileStat_.st_size) + "\r\n\r\n");
 }
 
 void HttpResponse::errorHtml_() {
@@ -166,11 +166,11 @@ void HttpResponse::errorHtml_() {
 
 std::string HttpResponse::getFileType_() {
     /* 判断文件类型 */
-    string::size_type idx = path_.find_last_of('.');
-    if(idx == string::npos) {
+    std::string::size_type idx = path_.find_last_of('.');
+    if(idx == std::string::npos) {
         return "text/plain";
     }
-    string suffix = path_.substr(idx);
+    std::string suffix = path_.substr(idx);
     if(SUFFIX_TYPE.count(suffix) == 1) {
         return SUFFIX_TYPE.find(suffix)->second;
     }

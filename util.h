@@ -6,8 +6,8 @@
 #define TCPSERVER_UTIL_H
 #include <cstdio>
 #include <cstdlib>
-#include "./Log/Logger.h"
+#include "./Log/Log.h"
 
-using namespace Log;
+
 void errif(bool condition,const char* message);
 #endif //TCPSERVER_UTIL_H

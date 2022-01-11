@@ -6,7 +6,7 @@
 
 #include <utility>
 #define READ_BUFFER 1024
-Connection::Connection(std::shared_ptr<EventLoop>  _loop, const std::shared_ptr<Socket>& _socket):loop(std::move(_loop)),socket(_socket),channel(nullptr),readBuffer(new Buffer),writeBuffer(new Buffer){
+Connection::Connection(std::shared_ptr<EventLoop>  _loop, std::shared_ptr<Socket>  _socket):loop(std::move(_loop)),socket(std::move(_socket)),channel(nullptr),readBuffer(new Buffer),writeBuffer(new Buffer){
     channel = std::make_shared<Channel>(loop,socket);
     channel->setNotUseThreadPool(true);
     /*std::function<void()> cb = std::bind(&Connection::echo,this,_socket);
@@ -23,16 +23,15 @@ void Connection::echo(const std::shared_ptr<Socket>& client_socket) {
         if(bytes_read > 0){
             readBuffer->append(buf,bytes_read);
         } else if(bytes_read == -1 && errno == EINTR){  //客户端正常中断、继续读取
-            LOG_INFO<<"continue reading";
+            LOG_INFO("continue reading");
             continue;
         } else if(bytes_read == -1 && ((errno == EAGAIN) || (errno == EWOULDBLOCK))){//非阻塞IO，这个条件表示数据全部读取完毕
-            LOG_INFO<<"message from client fd "<< client_socket->get_fd()<<"content is"<<readBuffer->c_str();
-            LOG_INFO<<"finish reading once, errno: "<< errno;
+            LOG_INFO("message from client fd %d content is %s", client_socket->get_fd(),readBuffer->c_str());
+            LOG_INFO("finish reading once, errno: %d",errno);
             errif(write(client_socket->get_fd(), readBuffer->c_str(), readBuffer->size())== -1,"message write failed");
             readBuffer->clear();
             break;
         } else if(bytes_read == 0){  //EOF，客户端断开连接
-            LOG_INFO<<"EOF, client fd "<<client_socket->get_fd()<<" disconnected";
             //close(socket->get_fd());   //关闭socket会自动将文件描述符从epoll树上移除
             deleteConnetCallback(client_socket);
             break;

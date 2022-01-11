@@ -11,6 +11,7 @@
 #include "Socket.h"
 #include "Acceptor.h"
 #include "Connection.h"
+#include "./Sql/SqlConnRAII.h"
 #include "./Http/Httpconn.h"
 
 #define READ_BUFFER 1024

@@ -60,7 +60,7 @@ void Channel::handleEvent() {
     if(flag) {
         callback(); //直接执行
     }else {
-        LOG_DEBUG<<"task joined threadQue";
+        LOG_DEBUG("task joined threadQue");
         _loop->addTaskToQueue(callback); //加入线程队列
     }
 

@@ -7,7 +7,7 @@
 
 ThreadPool::ThreadPool(int size):stop(false) {
     {
-        LOG_INFO << "threadpool initialized,thread number is " << size;
+        LOG_INFO("threadpool initialized,thread number is %d",size);
     }
     for(int i=0;i<size;++i) {
         threads.emplace_back([this]() {

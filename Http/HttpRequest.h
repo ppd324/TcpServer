@@ -45,7 +45,7 @@ public:
     std::string GetPost(const char* key) const;
     bool IsKeepAlive() const;
     void printHead();
-    bool UserVerify(const string &name, const string &pwd, bool isLogin);
+    bool UserVerify(const std::string &name, const std::string &pwd, bool isLogin);
 private:
     bool ParseRequestLine_(const std::string& line);
     void ParseHeader_(const std::string& line);

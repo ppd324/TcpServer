@@ -5,6 +5,7 @@
 #ifndef TCPSERVER_CONNECTION_H
 #define TCPSERVER_CONNECTION_H
 #include <functional>
+#include <atomic>
 #include "Channel.h"
 #include "Socket.h"
 #include "Buffer.h"
@@ -24,7 +25,7 @@ protected:
     std::shared_ptr<Buffer> writeBuffer;
     std::function<void(std::shared_ptr<Socket>)> deleteConnetCallback;
 public:
-    Connection(std::shared_ptr<EventLoop>  _loop,const std::shared_ptr<Socket>& _socket);
+    Connection(std::shared_ptr<EventLoop>  _loop,std::shared_ptr<Socket>  _socket);
     virtual ~Connection();
 
     void echo(const std::shared_ptr<Socket>&);

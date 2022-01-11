@@ -21,7 +21,7 @@ Acceptor::~Acceptor() {
 void Acceptor::acceptConnection() {
     InetAddress *clnt_addr = new InetAddress();
     std::shared_ptr<Socket>clnt_sock = std::make_shared<Socket>(_sock->accept(clnt_addr).get_fd());
-    LOG_INFO<<"new client fd is "<< clnt_sock->get_fd()<<" ip is "<<inet_ntoa(clnt_addr->addr.sin_addr)<<" port is "<<ntohs(clnt_addr->addr.sin_port);
+    LOG_INFO("new client fd is %d, ip is %s ,port is %d",clnt_sock->get_fd(),inet_ntoa(clnt_addr->addr.sin_addr),ntohs(clnt_addr->addr.sin_port));
     clnt_sock->setnonblocking();
     newConnectionCallback(clnt_sock);
 

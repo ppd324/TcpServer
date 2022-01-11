@@ -13,7 +13,7 @@ SqlConnPool *SqlConnPool::Instance() {
 MYSQL *SqlConnPool::getConn() {
     MYSQL* conn = nullptr;
     if(_connQue.empty()) {
-        LOG_WARN<<"sqlconnpool is busy";
+        LOG_WARN("sqlconnpool is busy");
         return nullptr;
     }
     sem_wait(&_sem);
@@ -34,19 +34,21 @@ void SqlConnPool::freeConn(MYSQL *conn) {
 }
 
 void
-SqlConnPool::Init(const char *host, int port, const char *user, const char *pwd, const char *dbName, int connSize) {
+SqlConnPool::Init(const char *host, int port, const char *user, const char *pwd, const char *dbName, int connSize = 3) {
     assert(connSize > 0);
+    LOG_DEBUG("sql connect num is %d",connSize);
     for(int i=0;i<connSize;++i) {
         MYSQL *conn = nullptr;
         conn = mysql_init(conn);
         if(!conn) {
-            LOG_ERROR<<"mysql init error";
+            LOG_ERROR("mysql init error");
         }
-        conn = mysql_real_connect(conn,host,user,pwd,dbName,port,nullptr,0);
-        if(!conn) {
-            LOG_ERROR<<"mysql connect error";
-        }else {
-            LOG_DEBUG<<"mysql connect success";
+        if(!mysql_real_connect(conn,host,user,pwd,dbName,port,nullptr,0)) {
+            fprintf(stderr, "Failed to connect to database: Error: %s\n",
+                    mysql_error(conn));
+        }
+        else {
+            LOG_DEBUG("mysql connect success");
         }
         _connQue.push(conn);
     }
@@ -73,7 +75,7 @@ void SqlConnPool::closePool() {
 }
 
 SqlConnPool::SqlConnPool():_USE_COUNT_(0),_FREE_COUNT_(0) {
-    Init("127.0.0.1",3306,"root","123456","serverUser",3);
+
 }
 
 SqlConnPool::~SqlConnPool() {

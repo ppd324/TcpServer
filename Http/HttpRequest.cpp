@@ -20,7 +20,6 @@ void HttpRequest::ParseBody_(const std::string &line) {
     body_ = line;
     ParsePost_();
     parse_state_ = FINISH_;
-    LOG_DEBUG<<"Body:"<<line.c_str()<<" size is"<<line.size();
 
 }
 
@@ -40,18 +39,18 @@ bool HttpRequest::parse(std::shared_ptr<Buffer> &buffer) {
                     return false;
                 }
                 ParsePath_();
-                LOG_DEBUG<<"parse line successfully";
+                LOG_DEBUG("parse line successfully");
                 break;
             case HEADERS_:
                 ParseHeader_(line);
                 if(buffer->readableBytes() <= 2) {
                     parse_state_ = FINISH_;
                 }
-                LOG_DEBUG<<"parse header successfully";
+                LOG_DEBUG("parse header successfully");
                 break;
             case BODY_:
                 ParseBody_(line);
-                LOG_DEBUG<<"parse body successfully";
+                LOG_DEBUG("parse body successfully");
                 break;
             default:
                 break;
@@ -102,17 +101,17 @@ bool HttpRequest::ParseRequestLine_(const std::string &line) {
         version_ = subMatch[3];
         parse_state_ = HEADERS_;
         return true;
-        LOG_DEBUG<<"parse requestLine successfully";
+        LOG_DEBUG("parse requestLine successfully");
     }
-    LOG_ERROR<<"parse requestLine error";
+    LOG_ERROR("parse requestLine error");
     return false;
 
 
 }
 
 void HttpRequest::ParseHeader_(const std::string &line) {
-    regex patten("^([^:]*): ?(.*)$");
-    smatch subMatch;
+    std::regex patten("^([^:]*): ?(.*)$");
+    std::smatch subMatch;
     if(regex_match(line, subMatch, patten)) {
         header_[subMatch[1]] = subMatch[2];
     }
@@ -140,7 +139,7 @@ void HttpRequest::ParsePost_() {
         ParseFromUrlencoded_();
         if(DEFAULT_HTML_TAG.count(path_)) {
             int tag = DEFAULT_HTML_TAG.find(path_)->second;
-            LOG_DEBUG<<"tag is "<<tag;
+            LOG_DEBUG("tag is %d",tag);
             if(tag == 0 || tag == 1) {
                 bool isLogin = (tag == 1);
                 if(UserVerify(post_["username"],post_["password"],isLogin)) {
@@ -153,9 +152,9 @@ void HttpRequest::ParsePost_() {
     }
 
 }
-bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin) {
+bool HttpRequest::UserVerify(const std::string &name, const std::string &pwd, bool isLogin) {
     if(name.empty() || pwd.empty()) return false;
-    LOG_INFO<<"username: "<<name<<" pwd: "<<pwd;
+    LOG_INFO("username: %s pwd is %s",name.c_str(),pwd.c_str());
     MYSQL* sql;
     SqlConnRAII sqlConn(&sql,SqlConnPool::Instance());
     assert(sql);
@@ -168,7 +167,7 @@ bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin
     if(!isLogin) { flag = true; }
     /* 查询用户及密码 */
     snprintf(order, 256, "SELECT username, password FROM user WHERE username='%s' LIMIT 1", name.c_str());
-    LOG_DEBUG<<order;
+    LOG_DEBUG("%s",order);
 
     if(mysql_query(sql,order)) { //返回值为0执行成功、非0失败
         mysql_free_result(res);
@@ -178,36 +177,36 @@ bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin
     j = mysql_num_fields(res);
     fields = mysql_fetch_fields(res);
     while(MYSQL_ROW row = mysql_fetch_row(res)) {
-        LOG_DEBUG<<"mysql row is "<<row[0] << " "<<row[1];
+        LOG_DEBUG("mysql row is %s  %s",row[0],row[1]);
         std::string password(row[1]);
         if(isLogin) {
             if(pwd == password) { flag = true; }
             else {
                 flag = false;
-                LOG_DEBUG<<"pwd error!";
+                LOG_DEBUG("pwd error!");
             }
         }
         else {
             flag = false;
-            LOG_DEBUG<<"user used!";
+            LOG_DEBUG("user used!");
         }
 
     }
     mysql_free_result(res);
     /*注册行为*/
     if(!isLogin && flag) {
-        LOG_DEBUG<<"register user";
+        LOG_DEBUG("register user");
         bzero(order,256);
         snprintf(order, 256,"INSERT INTO user(username, password) VALUES('%s','%s')", name.c_str(), pwd.c_str());
-        LOG_DEBUG<<"sql query:"<<order;
+        LOG_DEBUG("sql query: %s",order);
         if(mysql_query(sql,order)) {
-            LOG_ERROR<<"sql insert error";
+            LOG_ERROR("sql insert error");
             flag = false;
         }
         flag = true;
 
     }
-    LOG_DEBUG<<"UserVerify Successful";
+    LOG_DEBUG("UserVerify Successful");
     return flag;
 
 
@@ -215,7 +214,7 @@ bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin
 }
 void HttpRequest::ParseFromUrlencoded_() {
     if(body_.empty()) { return; }
-    string key, value;
+    std::string key, value;
     int num = 0;
     int n = body_.size();
     int i = 0, j = 0;
@@ -240,7 +239,7 @@ void HttpRequest::ParseFromUrlencoded_() {
                 value = body_.substr(j, i - j);
                 j = i + 1;
                 post_[key] = value;
-                LOG_DEBUG<<key.c_str()<<"->->"<<value.c_str();
+                LOG_DEBUG("%s -->  %s",key.c_str(),value.c_str());
                 break;
             default:
                 break;
