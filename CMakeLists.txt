@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
 project(TcpServer)
 set(CMAKE_CXX_STANDARD 14)
-aux_source_directory(./Http/ HTTP_SRC)
-aux_source_directory(./Sql/ Sqlconn)
-add_library(network util.cpp util.h Socket.cpp Socket.h InetAddress.cpp InetAddress.h Epoll.cpp Epoll.h Channel.h Channel.cpp  Acceptor.cpp Acceptor.h Connection.cpp Connection.h EventLoop.cpp EventLoop.h)
-add_library(buffer Buffer.cpp Buffer.h)
-add_library(pool ThreadPool.cpp ThreadPool.h)
-add_library(log ../Log/BlockingQueue.h ../Log/Log.h ../Log/Log.cpp)
-add_library(http ${HTTP_SRC})
-add_library(sqlconn ${Sqlconn})
-add_executable(TcpServer ./main.cpp Server.cpp Server.h ./Sql/SqlConnPool.cpp ./Sql/SqlConnPool.h ./Sql/SqlConnRAII.h )
-target_link_libraries(TcpServer network http buffer pool log pthread mysqlclient)
+aux_source_directory(. ALL_SRCS)
+
+#添加子目录
+add_subdirectory(Http)
+add_subdirectory(Log)
+add_subdirectory(Sql)
+add_subdirectory(Timer)
+
+add_executable(TcpServer ${ALL_SRCS})
+target_link_libraries(TcpServer Http Log Sql Timer pthread mysqlclient)
