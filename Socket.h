@@ -14,7 +14,6 @@ enum class protocol {
     UDP
 
 };
-class InetAddress;
 class Socket {
 public:
     Socket();

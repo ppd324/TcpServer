@@ -18,7 +18,7 @@ Server::Server(std::shared_ptr<EventLoop> loop, uint32_t port):mainReactor(loop)
     this->threadPool = std::make_shared<ThreadPool>(threadSize);
     SqlConnPool::Instance()->Init("127.0.0.1",3306,"root","123456","serverUser",2);
     for(int i=0;i<threadSize;++i) {
-        subReactor.emplace_back(std::make_shared<EventLoop>());
+        subReactor.emplace_back(std::make_shared<EventLoop>(true));
     }
 
     for(int i=0;i<threadSize;++i) {
@@ -72,6 +72,7 @@ void Server::onHttpConnect(std::shared_ptr<Socket> socket) {
     if(socket->get_fd() != -1) {
         int random = socket->get_fd()%subReactor.size();
         std::shared_ptr<Httpconn> conn = std::make_shared<Httpconn>(subReactor[random],socket);
+        conn->loop->timer->add(conn,std::bind(&Server::deleteConnection,this,socket));
         onReadEvent(conn,socket);
         std::function<void(std::shared_ptr<Socket>)> cb = std::bind(&Server::deleteConnection,this,socket);
         conn->setDeleteConnetCallback(cb);
@@ -81,6 +82,7 @@ void Server::onHttpConnect(std::shared_ptr<Socket> socket) {
 }
 
 void Server::onReadEvent(std::shared_ptr<Httpconn> &httpconn,std::shared_ptr<Socket> &_socket) {
+    httpconn->loop->timer->update(httpconn);
     std::function<void()> cb = std::bind(&Httpconn::handleEvent,httpconn,_socket);
     httpconn->channel->setCallback(cb);
     httpconn->channel->enableReading();

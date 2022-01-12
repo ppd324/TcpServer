@@ -45,6 +45,4 @@ void Connection::setDeleteConnetCallback(std::function<void(std::shared_ptr<Sock
 
 }
 
-Connection::~Connection() {
-
-}
+Connection::~Connection() = default;

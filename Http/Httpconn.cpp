@@ -9,7 +9,7 @@
 const char* Httpconn::srcDir = "/home/ppd/CLionProjects/TcpServer/resources";
 std::atomic<int> Httpconn::userCount;
 bool Httpconn::isET = true;
-Httpconn::Httpconn(std::shared_ptr<EventLoop> _loop, const std::shared_ptr<Socket> &_socket): Connection(std::move(_loop),_socket),httpRequest_() {
+Httpconn::Httpconn(std::shared_ptr<EventLoop> _loop, const std::shared_ptr<Socket>& _socket): Connection(std::move(_loop),_socket),httpRequest_() {
 
 
 }
@@ -98,11 +98,10 @@ bool Httpconn::handleEvent(std::shared_ptr<Socket> &_socket) {
         channel->setCallback(cb);
         channel->enableWriting();*/
         write(_socket);
+        return true;
     }
+    return false;
 
 
 }
 
-Httpconn::~Httpconn() {
-
-}

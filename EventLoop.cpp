@@ -3,7 +3,7 @@
 //
 
 #include "EventLoop.h"
-EventLoop::EventLoop():ep(nullptr),quit(false){
+EventLoop::EventLoop():ep(nullptr),quit(false),timer( new Timer(60000)),TimeOutFlag(false){
     ep = new Epoll();
 
 }
@@ -14,7 +14,11 @@ EventLoop::~EventLoop() {
 }
 void EventLoop::loop() {
     while(!quit) {
-        if(ep->poll()) {
+        int ret = -1;
+        if(TimeOutFlag) {
+             ret = timer->GetNextTick();
+        }
+        if(ep->poll(ret)) {
             std::vector<Channel*> active = std::move(ep->getActiveEvents());
             for(auto & it : active) {
                 it->handleEvent();
@@ -36,5 +40,16 @@ void EventLoop::addTaskToQueue(std::function<void()> &task) {
 
 void EventLoop::deleteChannel(Channel *channel) {
     ep->deleteChannel(channel);
+
+}
+
+void EventLoop::setTimeOut(bool flag) {
+    TimeOutFlag = flag;
+
+
+}
+
+EventLoop::EventLoop(bool flag):ep(nullptr),quit(false),timer( new Timer(60000)),TimeOutFlag(flag){
+    ep = new Epoll();
 
 }

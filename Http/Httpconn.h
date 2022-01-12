@@ -4,14 +4,20 @@
 
 #ifndef TCPSERVER_HTTPCONN_H
 #define TCPSERVER_HTTPCONN_H
+#pragma once
 #include <sys/uio.h>
-#include "../Connection.h"
+#include <memory>
 #include "HttpRequest.h"
 #include "HttpResponse.h"
-class Httpconn :public Connection {
+#include "../Connection.h"
+class EventLoop;
+class Socket;
+class HttpRequest;
+class HttpResponse;
+class Httpconn:public Connection {
 public:
     Httpconn(std::shared_ptr<EventLoop>  _loop, const std::shared_ptr<Socket>& _socket);
-    ~Httpconn() override;
+    ~Httpconn()  = default;
     bool handleEvent(std::shared_ptr<Socket> &_socket);
     size_t read(std::shared_ptr<Socket>& _socket);
     size_t write(std::shared_ptr<Socket>& _socket);
@@ -23,12 +29,10 @@ public:
     static const char* srcDir;
     static std::atomic<int> userCount;
 private:
-    struct iovec iov_[2];
-    int iovCnt_;
+    struct iovec iov_[2]{};
+    int iovCnt_{};
     HttpRequest httpRequest_;
     HttpResponse httpResponse_;
-
-
 
 };
 

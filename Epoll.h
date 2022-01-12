@@ -12,7 +12,6 @@
 #include <cstdio>
 #include "util.h"
 #include "Channel.h"
-#define MAX_EVENTS 1000
 class Channel;
 class Epoll {
 private:
