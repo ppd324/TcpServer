@@ -1,5 +1,6 @@
 # TcpServer
 基于Reactor模型事件驱动C++服务器
+
 ##1.实现channel类根据事件注册回调函数，事件驱动，有响应时间发生调用回调函数；
 ##2.抽象连接类Connection,继承实现Httpconn类；
 ##3.采用主从Reactor模式，一个mainReactor，多subReactor，mainRector负责建立连接，采用Epoll水平触发防止丢失连接，将连接分配给subRector，subRector负责读写以及业务逻辑；
