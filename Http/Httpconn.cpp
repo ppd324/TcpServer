@@ -18,9 +18,15 @@ size_t Httpconn::write(std::shared_ptr<Socket>& _socket) {
     do {
         len = writev(_socket->get_fd(),iov_,iovCnt_);
         if(len < 0) {
-            LOG_DEBUG("write to client error");
-            deleteConnetCallback(_socket);
-            break;
+            if(errno == EAGAIN || errno == EINTR) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                continue;
+            }
+            if(errno == ECONNRESET) {
+                LOG_DEBUG("client is closed,write failed");
+                deleteConnetCallback(_socket);
+                break;
+            }
         }
         if(iov_[0].iov_len + iov_[1].iov_len == 0) break;
         else if(static_cast<size_t>(len) > iov_[0].iov_len) {

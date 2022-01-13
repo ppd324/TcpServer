@@ -40,7 +40,7 @@ void Timer::tick() {
 }
 int Timer::GetNextTick() {
     tick();
-    size_t res = -1;
+    long res = -1;
     if(!_heap.empty()) {
         res = std::chrono::duration_cast<MS>(_heap.top()->expires - Clock::now()).count();
         if(res < 0) { res = 0; }
