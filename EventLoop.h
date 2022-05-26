@@ -12,7 +12,6 @@
 class Timer;
 class Channel;
 class Epoll;
-class ThreadPool;
 class EventLoop{
 private:
     //std::shared_ptr<ThreadPool> threadPool;

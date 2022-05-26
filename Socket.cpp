@@ -1,7 +1,10 @@
 //
 // Created by 裴沛东 on 2021/12/27.
 //
-
+#include <sys/socket.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <iostream>
 #include "Socket.h"
 Socket::Socket():fd(-1),addr(nullptr){
     fd = socket(AF_INET,SOCK_STREAM,0);
@@ -40,12 +43,15 @@ Socket Socket::accept(InetAddress *client_addr) const {
      return Socket(client_fd,client_addr);
 }
 Socket::~Socket() {
+    std::cout<<"socket deconstruct"<<std::endl;
     if(fd == -1) {
         close(fd);
         fd = -1;
     }
-    delete addr;
-    addr = nullptr;
+    if(addr != nullptr) {
+        delete addr;
+        addr = nullptr;
+    }
 
 }
 int Socket::get_fd() const {

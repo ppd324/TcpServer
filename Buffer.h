@@ -6,8 +6,7 @@
 #define TCPSERVER_BUFFER_H
 
 #include <string>
-#include <iostream>
-#include <algorithm>
+
 class Buffer {
 public:
     Buffer();

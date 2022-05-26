@@ -5,9 +5,6 @@
 #ifndef TCPSERVER_CONNECTION_H
 #define TCPSERVER_CONNECTION_H
 #pragma once
-#include <functional>
-#include <atomic>
-#include <memory>
 #include "Channel.h"
 #include "Socket.h"
 #include "Buffer.h"
@@ -20,7 +17,7 @@ class Buffer;
  */
 
 class Connection {
-protected:
+public:
     std::shared_ptr<Socket> socket;
     std::shared_ptr<Buffer> readBuffer;
     std::shared_ptr<Buffer> writeBuffer;

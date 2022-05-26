@@ -4,13 +4,8 @@
 
 #ifndef TCPSERVER_EPOLL_H
 #define TCPSERVER_EPOLL_H
-#include <sys/epoll.h>
 #include <vector>
-#include <unistd.h>
-#include <cstring>
-#include <memory>
-#include <cstdio>
-#include "util.h"
+#include <sys/epoll.h>
 #include "Channel.h"
 class Channel;
 class Epoll {

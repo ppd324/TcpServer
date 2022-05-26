@@ -3,8 +3,14 @@
 //
 
 #include "Connection.h"
-
+#include <functional>
+#include <atomic>
+#include <memory>
 #include <utility>
+#include <cstring>
+#include <unistd.h>
+#include <iostream>
+
 #define READ_BUFFER 1024
 Connection::Connection(std::shared_ptr<EventLoop>  _loop, std::shared_ptr<Socket>  _socket):loop(std::move(_loop)),socket(std::move(_socket)),channel(nullptr),readBuffer(new Buffer),writeBuffer(new Buffer){
     channel = std::make_shared<Channel>(loop,socket);
@@ -19,7 +25,7 @@ void Connection::echo(const std::shared_ptr<Socket>& client_socket) {
     char buf[READ_BUFFER];
     while(true){    //由于使用非阻塞IO，读取客户端buffer，一次读取buf大小数据，直到全部读取完毕
         bzero(&buf, sizeof(buf));
-        ssize_t bytes_read = read(client_socket->get_fd(), buf, sizeof(buf));
+        ssize_t bytes_read = ::read(client_socket->get_fd(), buf, sizeof(buf));
         if(bytes_read > 0){
             readBuffer->append(buf,bytes_read);
         } else if(bytes_read == -1 && errno == EINTR){  //客户端正常中断、继续读取
@@ -45,4 +51,6 @@ void Connection::setDeleteConnetCallback(std::function<void(std::shared_ptr<Sock
 
 }
 
-Connection::~Connection() = default;
+Connection::~Connection() {
+    std::cout<<"Connection Deconstuct"<<std::endl;
+};

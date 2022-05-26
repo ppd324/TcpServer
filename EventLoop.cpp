@@ -19,6 +19,7 @@ void EventLoop::loop() {
              ret = timer->GetNextTick();
         }
         if(ep->poll(ret)) {
+            LOG_INFO("%ld thread have new event=====================================================================",std::this_thread::get_id());
             std::vector<Channel*> active = std::move(ep->getActiveEvents());
             for(auto & it : active) {
                 it->handleEvent();

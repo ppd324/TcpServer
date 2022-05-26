@@ -1,8 +1,9 @@
 //
 // Created by 裴沛东 on 2022/1/3.
 //
-
+#include <mysql/mysql.h>
 #include <cassert>
+#include <thread>
 #include "SqlConnPool.h"
 
 SqlConnPool *SqlConnPool::Instance() {

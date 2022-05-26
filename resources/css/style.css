@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css?family=Muli:200,300,400');
+@import url('https://fonts.cat.net/css?family=Muli:200,300,400');
 
 body {
   background: #ffffff;
@@ -560,5 +560,8 @@ a:hover, a:active, a:focus {
     width: 85px;
     height: 85px;
   }
+
+}
+
 
 }

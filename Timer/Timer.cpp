@@ -62,3 +62,8 @@ void Timer::update(std::shared_ptr<Httpconn> &httpconn) {
     timer->expires = Clock::now() + MS(_timeout);
 
 }
+
+void Timer::deleteConn(std::shared_ptr<Httpconn> &conn) {
+    _ref.erase(conn);
+
+}

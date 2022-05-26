@@ -3,6 +3,8 @@
 //
 
 #include <cassert>
+#include <iostream>
+#include <algorithm>
 #include "Buffer.h"
 Buffer::Buffer():Buf(""){
 

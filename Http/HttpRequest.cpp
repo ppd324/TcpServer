@@ -4,6 +4,7 @@
 
 #include <regex>
 #include <cassert>
+#include <iostream>
 #include "HttpRequest.h"
 const std::unordered_set<std::string> HttpRequest::DEFAULT_HTML{
         "/index", "/register", "/login",
@@ -39,18 +40,18 @@ bool HttpRequest::parse(std::shared_ptr<Buffer> &buffer) {
                     return false;
                 }
                 ParsePath_();
-                LOG_DEBUG("parse line successfully");
+                //LOG_DEBUG("parse line successfully");
                 break;
             case HEADERS_:
                 ParseHeader_(line);
                 if(buffer->readableBytes() <= 2) {
                     parse_state_ = FINISH_;
                 }
-                LOG_DEBUG("parse header successfully");
+                //LOG_DEBUG("parse header successfully");
                 break;
             case BODY_:
                 ParseBody_(line);
-                LOG_DEBUG("parse body successfully");
+                //LOG_DEBUG("parse body successfully");
                 break;
             default:
                 break;
@@ -101,7 +102,7 @@ bool HttpRequest::ParseRequestLine_(const std::string &line) {
         version_ = subMatch[3];
         parse_state_ = HEADERS_;
         return true;
-        LOG_DEBUG("parse requestLine successfully");
+        //LOG_DEBUG("parse requestLine successfully");
     }
     LOG_ERROR("parse requestLine error");
     return false;

@@ -11,11 +11,11 @@ private:
     std::shared_ptr<EventLoop> _loop;
     std::shared_ptr<Socket> _sock;
     std::shared_ptr<Channel> _channel;
-    std::function<void(std::shared_ptr<Socket>)> newConnectionCallback;
+    std::function<void(std::shared_ptr<Socket>&)> newConnectionCallback;
 public:
     Acceptor(std::shared_ptr<EventLoop>& loop,int port);
     ~Acceptor();
     void acceptConnection();
-    void setNewConnectionCallback(std::function<void(std::shared_ptr<Socket>)> callback);
+    void setNewConnectionCallback(std::function<void(std::shared_ptr<Socket>&)> callback);
 };
 #endif //TCPSERVER_ACCEPTOR_H

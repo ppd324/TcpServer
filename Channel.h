@@ -4,7 +4,7 @@
 
 #ifndef TCPSERVER_CHANNEL_H
 #define TCPSERVER_CHANNEL_H
-#include <sys/epoll.h>
+
 #include <functional>
 #include "Epoll.h"
 #include "EventLoop.h"

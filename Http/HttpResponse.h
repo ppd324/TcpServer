@@ -5,10 +5,6 @@
 #ifndef TCPSERVER_HTTPRESPONSE_H
 #define TCPSERVER_HTTPRESPONSE_H
 #include <unordered_map>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
 #include <memory>
 
 #include "../Buffer.h"

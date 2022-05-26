@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <string>
-#include <regex>
 #include <memory>
 #include "../Sql/SqlConnRAII.h"
 #include "../Buffer.h"

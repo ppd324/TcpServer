@@ -17,17 +17,17 @@ class HttpResponse;
 class Httpconn:public Connection {
 public:
     Httpconn(std::shared_ptr<EventLoop>  _loop, const std::shared_ptr<Socket>& _socket);
-    ~Httpconn()  = default;
+    ~Httpconn();
     bool handleEvent(std::shared_ptr<Socket> &_socket);
     size_t read(std::shared_ptr<Socket>& _socket);
     size_t write(std::shared_ptr<Socket>& _socket);
+    int get_fd() const;
     bool process();
     int ToWriteBytes() {
         return iov_[0].iov_len + iov_[1].iov_len;
     }
     static bool isET;
     static const char* srcDir;
-    static std::atomic<int> userCount;
 private:
     struct iovec iov_[2]{};
     int iovCnt_{};

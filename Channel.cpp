@@ -3,6 +3,8 @@
 //
 
 #include "Channel.h"
+#include <sys/epoll.h>
+#include <iostream>
 
 class EventLoop;
 Channel::Channel(std::shared_ptr<EventLoop> loop, std::shared_ptr<Socket> sock): _loop(std::move(loop)),sock(std::move(sock)),events(0),revents(0),inpoll(false),flag(
@@ -10,6 +12,7 @@ Channel::Channel(std::shared_ptr<EventLoop> loop, std::shared_ptr<Socket> sock):
 }
 
 Channel::~Channel() {
+    std::cout<<"channel deconstruct"<<std::endl;
 
 }
 

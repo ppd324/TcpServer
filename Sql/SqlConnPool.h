@@ -4,10 +4,10 @@
 
 #ifndef TCPSERVER_SQLCONNPOOL_H
 #define TCPSERVER_SQLCONNPOOL_H
-#include <mysql/mysql.h>
+
 #include <queue>
 #include <mutex>
-#include <thread>
+
 #include <semaphore.h>
 #include "../util.h"
 

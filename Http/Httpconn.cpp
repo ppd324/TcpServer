@@ -5,9 +5,11 @@
 #include "Httpconn.h"
 
 #include <utility>
+#include <cstring>
+#include <unistd.h>
+#include <iostream>
 #include "../Server.h"
-const char* Httpconn::srcDir = "/home/ppd/CLionProjects/TcpServer/resources";
-std::atomic<int> Httpconn::userCount;
+const char* Httpconn::srcDir = "../resources";
 bool Httpconn::isET = true;
 Httpconn::Httpconn(std::shared_ptr<EventLoop> _loop, const std::shared_ptr<Socket>& _socket): Connection(std::move(_loop),_socket),httpRequest_() {
 
@@ -104,9 +106,20 @@ bool Httpconn::handleEvent(std::shared_ptr<Socket> &_socket) {
         channel->setCallback(cb);
         channel->enableWriting();*/
         write(_socket);
+        //deleteConnetCallback(_socket);
         return true;
     }
     return false;
+
+
+}
+
+int Httpconn::get_fd() const{
+    return this->socket->get_fd();
+}
+
+Httpconn::~Httpconn() {
+    std::cout<<"Httpconn deconstruct"<<std::endl;
 
 
 }

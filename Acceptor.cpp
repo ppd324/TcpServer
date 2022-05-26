@@ -26,7 +26,7 @@ void Acceptor::acceptConnection() {
     newConnectionCallback(clnt_sock);
 
 }
-void Acceptor::setNewConnectionCallback(std::function<void(std::shared_ptr<Socket>)> callback) {
+void Acceptor::setNewConnectionCallback(std::function<void(std::shared_ptr<Socket>&)> callback) {
     this->newConnectionCallback = std::move(callback);
 
 }

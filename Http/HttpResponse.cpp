@@ -3,6 +3,10 @@
 //
 
 #include <cassert>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 #include "HttpResponse.h"
 
 const std::unordered_map<std::string, std::string> HttpResponse::SUFFIX_TYPE = {

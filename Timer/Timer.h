@@ -35,6 +35,7 @@ public:
     int GetNextTick();
     void tick();
     explicit Timer(size_t timeout);
+    void deleteConn(std::shared_ptr<Httpconn> &conn);
     ~Timer();
 
 private:

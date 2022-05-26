@@ -4,9 +4,6 @@
 
 #ifndef TCPSERVER_SOCKET_H
 #define TCPSERVER_SOCKET_H
-#include <sys/socket.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include "util.h"
 #include "InetAddress.h"
 enum class protocol {
