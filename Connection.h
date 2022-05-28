@@ -28,6 +28,7 @@ public:
 
     void echo(const std::shared_ptr<Socket>&);
     void setDeleteConnetCallback(std::function<void(std::shared_ptr<Socket>)> func);
+    void setResetCallback();
 
 
     std::shared_ptr<Channel> channel;

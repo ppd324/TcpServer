@@ -53,4 +53,10 @@ void Connection::setDeleteConnetCallback(std::function<void(std::shared_ptr<Sock
 
 Connection::~Connection() {
     std::cout<<"Connection Deconstuct"<<std::endl;
+    deleteConnetCallback = nullptr;
+}
+
+void Connection::setResetCallback() {
+    deleteConnetCallback = nullptr;
+
 };

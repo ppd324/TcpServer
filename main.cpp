@@ -5,6 +5,7 @@
 int main() {
     Log *log = Log::Instance();
     log->init(0);
+    LOG_INFO("httpconn size is:%d",sizeof(Httpconn));
     auto loop = std::make_shared<EventLoop>();
     auto server = std::make_shared<Server>(loop,8888);
     loop->loop();

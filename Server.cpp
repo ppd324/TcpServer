@@ -66,13 +66,16 @@ void Server::deleteConnection(std::shared_ptr<Socket>& socket) {
         LOG_INFO("delete client connection fd is %d",socket->get_fd());
         httpConnList.find(socket)->second->channel->enableDeleting(); //从树上取下
         std::cout<<"Httpconn count is"<<httpConnList[socket].use_count()<<std::endl;
-        httpConnList.find(socket)->second->loop->timer->deleteConn(httpConnList.find(socket)->second);
+        std::shared_ptr<Httpconn> deleteconn = httpConnList[socket];
+        httpConnList[socket]->loop->timer->deleteConn(deleteconn);
         std::cout<<"Httpconn count is"<<httpConnList[socket].use_count()<<std::endl;
         httpConnList.erase(socket);
         if(socket->get_fd() != -1) {
             close(socket->get_fd());
             socket->set_fd(-1);
         }
+        std::cout<<"Socket count is"<<socket.use_count()<<std::endl;
+
     }
 
 
@@ -108,11 +111,12 @@ void Server::deleteSocket(std::shared_ptr<Socket> &socket) {
     if(ConnList.count(socket)) {
         LOG_INFO("delete client connection fd is %d",socket->get_fd());
         ConnList.find(socket)->second->channel->enableDeleting(); //从树上取下
-        ConnList.erase(socket);
         if(socket->get_fd() != -1) {
             close(socket->get_fd());
             socket->set_fd(-1);
         }
+        ConnList.erase(socket);
+
     }
 
 

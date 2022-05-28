@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <iostream>
+#include <cstring>
 #include "Socket.h"
 Socket::Socket():fd(-1),addr(nullptr){
     fd = socket(AF_INET,SOCK_STREAM,0);
@@ -37,14 +38,20 @@ void Socket::bind(InetAddress *addr) {
 void Socket::listen() const {
     errif(::listen(fd,SOMAXCONN) == -1,"socket listen failed");
 }
-Socket Socket::accept(InetAddress *client_addr) const {
-     int client_fd = ::accept(fd, (sockaddr*)&client_addr->addr, &client_addr->addr_len);
-     errif(client_fd == -1,"socket accept failed");
-     return Socket(client_fd,client_addr);
+std::shared_ptr<Socket> Socket::accept() const {
+    struct sockaddr_in client_addr;
+    memset(&client_addr, 0, sizeof(struct sockaddr_in));
+    socklen_t client_addr_len = sizeof(client_addr);
+    int accept_fd = 0;
+    int client_fd = ::accept(fd, (sockaddr*)&client_addr, &client_addr_len);
+    if(client_fd < 0) return nullptr;
+    LOG_INFO("new client fd is %d, ip is %s ,port is %d", client_fd, inet_ntoa(client_addr.sin_addr),
+             ntohs(client_addr.sin_port));
+    return std::make_shared<Socket>(client_fd);
 }
 Socket::~Socket() {
     std::cout<<"socket deconstruct"<<std::endl;
-    if(fd == -1) {
+    if(fd != -1) {
         close(fd);
         fd = -1;
     }

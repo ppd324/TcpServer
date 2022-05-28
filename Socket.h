@@ -22,7 +22,7 @@ public:
     void bind(InetAddress*);
     void listen() const;
     void setnonblocking() const;
-    Socket accept(InetAddress* addr) const;
+    std::shared_ptr<Socket> accept() const;
     void setsockopt();
     int get_fd() const;
     void set_fd(int fd);

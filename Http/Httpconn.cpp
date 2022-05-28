@@ -64,7 +64,7 @@ size_t Httpconn::read(std::shared_ptr<Socket>& _socket) {
         } else if(bytes_read == 0){  //EOF，客户端断开连接
             LOG_DEBUG("read message error fd is %d",_socket->get_fd());
             deleteConnetCallback(_socket);
-            break;
+            return -1;
         }
     }
 
@@ -100,14 +100,16 @@ bool Httpconn::process() {
 
 
 bool Httpconn::handleEvent(std::shared_ptr<Socket> &_socket) {
-    read(_socket);
-    if(process()) {
-        /*std::function<void()> cb = std::bind(&Httpconn::write,this,_socket);
-        channel->setCallback(cb);
-        channel->enableWriting();*/
-        write(_socket);
-        //deleteConnetCallback(_socket);
-        return true;
+    if(read(_socket) == 0) {
+        //std::cout << readBuffer->c_str() << std::endl;
+        if (process()) {
+            /*std::function<void()> cb = std::bind(&Httpconn::write,this,_socket);
+            channel->setCallback(cb);
+            channel->enableWriting();*/
+            write(_socket);
+            //deleteConnetCallback(_socket);
+            return true;
+        }
     }
     return false;
 
