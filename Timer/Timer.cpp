@@ -31,10 +31,14 @@ void Timer::tick() {
     }
     while(!_heap.empty()) {
         std::shared_ptr<TimerNode> timer = _heap.top();
+        if(timer == nullptr) {
+            _heap.pop();
+            continue;
+        }
         if(std::chrono::duration_cast<MS>(timer->expires - Clock::now()).count() > 0) {
             break;
         }
-        timer->cb();
+        if(timer->cb != nullptr) timer->cb();
         _heap.pop();
     }
 }
@@ -64,6 +68,7 @@ void Timer::update(std::shared_ptr<Httpconn> &httpconn) {
 }
 
 void Timer::deleteConn(std::shared_ptr<Httpconn> &conn) {
+    _ref[conn]->cb = nullptr;
     _ref.erase(conn);
 
 }
