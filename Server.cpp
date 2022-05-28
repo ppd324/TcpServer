@@ -5,13 +5,22 @@
 #include <cstring>
 #include <unistd.h>
 #include <iostream>
+#include <csignal>
 #include "Server.h"
 
 class Socket;
 class InetAddress;
 class Channel;
 class Httpconn;
+void handle_for_sigpipe() {
+    struct sigaction sa;
+    memset(&sa, '\0', sizeof(sa));
+    sa.sa_handler = SIG_IGN;
+    sa.sa_flags = 0;
+    if (sigaction(SIGPIPE, &sa, NULL)) return;
+}
 Server::Server(std::shared_ptr<EventLoop> loop, uint32_t port):mainReactor(loop),acceptor(nullptr){
+    handle_for_sigpipe();
     this->acceptor = std::make_shared<Acceptor>(loop,port);
     std::function<void(std::shared_ptr<Socket>&)> cb = std::bind(&Server::onHttpConnect, this, std::placeholders::_1);
     acceptor->setNewConnectionCallback(cb);
