@@ -13,16 +13,17 @@ Channel::Channel(std::shared_ptr<EventLoop> loop, std::shared_ptr<Socket> sock):
 
 Channel::~Channel() {
     std::cout<<"channel deconstruct"<<std::endl;
+    callback = nullptr;
 
 }
 
 void Channel::enableReading() {
-    events = EPOLLIN | EPOLLET;
+    events = EPOLLIN | EPOLLET | EPOLLRDHUP;
     _loop->updateChannel(this);
 }
 
 void Channel::enableListening() {
-    events = EPOLLRDHUP | EPOLLIN;
+    events =  EPOLLIN | EPOLLET;
     _loop->updateChannel(this);
 }
 

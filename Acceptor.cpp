@@ -19,11 +19,11 @@ Acceptor::~Acceptor() {
 
 }
 void Acceptor::acceptConnection() {
-    InetAddress *clnt_addr = new InetAddress();
-    std::shared_ptr<Socket>clnt_sock = std::make_shared<Socket>(_sock->accept(clnt_addr).get_fd());
-    LOG_INFO("new client fd is %d, ip is %s ,port is %d",clnt_sock->get_fd(),inet_ntoa(clnt_addr->addr.sin_addr),ntohs(clnt_addr->addr.sin_port));
-    clnt_sock->setnonblocking();
-    newConnectionCallback(clnt_sock);
+    std::shared_ptr<Socket> client_sock = nullptr;
+    while((client_sock = _sock->accept()) != nullptr) {
+        client_sock->setnonblocking();
+        newConnectionCallback(client_sock);
+    }
 
 }
 void Acceptor::setNewConnectionCallback(std::function<void(std::shared_ptr<Socket>&)> callback) {
