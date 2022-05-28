@@ -1,7 +1,7 @@
 //
 // Created by 裴沛东 on 2021/12/27.
 //
-#define MAX_EVENTS 20
+
 #include <sys/epoll.h>
 #include <vector>
 #include <unistd.h>
@@ -15,7 +15,7 @@ Epoll::Epoll():epollfd(-1),events(nullptr){
     errif(epollfd == -1,"epoll_create failed");
     events = new epoll_event[MAX_EVENTS];
     bzero(events, sizeof(epoll_event) * MAX_EVENTS);
-
+    ActiveEvents.reserve(MAX_EVENTS);
 
 }
 void Epoll::addFd(int fd, uint32_t option) {
@@ -34,7 +34,6 @@ Epoll::~Epoll() {
 
 }
 bool Epoll::poll(int timeout) {
-    ActiveEvents.clear();
     int nfds = epoll_wait(epollfd, events, MAX_EVENTS, timeout);
     errif(nfds == -1, "epoll wait error");
     for(int i = 0; i < nfds; ++i){

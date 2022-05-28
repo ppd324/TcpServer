@@ -4,6 +4,7 @@
 
 #ifndef TCPSERVER_EPOLL_H
 #define TCPSERVER_EPOLL_H
+#define MAX_EVENTS 1024
 #include <vector>
 #include <sys/epoll.h>
 #include "Channel.h"
@@ -12,6 +13,7 @@ class Epoll {
 private:
     int epollfd;
     epoll_event *events;
+public:
     std::vector<Channel*> ActiveEvents;
 public:
     Epoll();
